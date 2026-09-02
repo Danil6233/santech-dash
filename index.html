@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Аналитика Сети</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg: var(--tg-theme-bg-color, #f5f5f7);
+      --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
+      --text: var(--tg-theme-text-color, #1c1c1e);
+      --hint: var(--tg-theme-hint-color, #8e8e93);
+      --accent: var(--tg-theme-button-color, #007aff);
+      --accent-text: var(--tg-theme-button-text-color, #ffffff);
+      --danger: #ff3b30;
+      --warning: #ffcc00;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; }
+    
+    /* Переключатель магазинов */
+    .tabs { display: flex; background: var(--card-bg); border-radius: 8px; padding: 4px; margin-bottom: 16px; }
+    .tab { flex: 1; border: none; background: transparent; padding: 8px; font-size: 13px; font-weight: 600; color: var(--hint); border-radius: 6px; }
+    .tab.active { background: var(--accent); color: var(--accent-text); }
+    
+    /* Карточки KPI */
+    .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .kpi-card { background: var(--card-bg); border-radius: 12px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .kpi-label { font-size: 13px; color: var(--hint); margin-bottom: 6px; }
+    .kpi-value { font-size: 18px; font-weight: 700; }
+    
+    /* Логистика и остатки */
+    .section-title { font-size: 15px; font-weight: 600; margin-bottom: 10px; margin-top: 20px; }
+    .list-container { background: var(--card-bg); border-radius: 12px; overflow: hidden; }
+    .list-item { padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); }
+    .list-item:last-child { border-bottom: none; }
+    .item-name { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+    .item-action { font-size: 12px; font-weight: 600; padding: 4px 8px; border-radius: 6px; display: inline-block; }
+    .action-move { background: rgba(255, 204, 0, 0.2); color: #b38f00; }
+    .action-buy { background: rgba(255, 59, 48, 0.1); color: var(--danger); }
+  </style>
+</head>
+<body>
+
+  <div class="tabs">
+    <button class="tab active" onclick="setStore('all', this)">Сеть</button>
+    <button class="tab" onclick="setStore('moscow', this)">Московская</button>
+    <button class="tab" onclick="setStore('presnya', this)">Пресня</button>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Выручка за месяц</div>
+      <div class="kpi-value" id="val-revenue">6 006 257 ₽</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Чеков</div>
+      <div class="kpi-value" id="val-orders">1 842 шт.</div>
+    </div>
+  </div>
+
+  <div class="section-title">Требует внимания логистики</div>
+  <div class="list-container" id="alerts-list">
+    <!-- Сюда будут подгружаться остатки -->
+    <div class="list-item">
+      <div class="item-name">Котел газовый BAXI ECO Four 24 F</div>
+      <div class="item-action action-move">Переместить 1 шт. на Московскую (На Пресне 2 шт.)</div>
+    </div>
+    <div class="list-item">
+      <div class="item-name">Унитаз WELTWASSER SALZBACH</div>
+      <div class="item-action action-buy">Срочный дозаказ (Остаток 2 шт. на сеть)</div>
+    </div>
+  </div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    // Данные для переключения (заглушки для демонстрации клиенту)
+    const storeData = {
+      all: { rev: '6 006 257 ₽', ord: '1 842 шт.' },
+      moscow: { rev: '5 331 040 ₽', ord: '1 620 шт.' },
+      presnya: { rev: '675 217 ₽', ord: '222 шт.' }
+    };
+
+    function setStore(storeId, btnElement) {
+      // Меняем активную кнопку
+      document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+      btnElement.classList.add('active');
+      
+      // Обновляем цифры
+      document.getElementById('val-revenue').innerText = storeData[storeId].rev;
+      document.getElementById('val-orders').innerText = storeData[storeId].ord;
+    }
+
+    // Здесь можно добавить функцию fetch() для связи с вашими Google Таблицами через OpenSheet
+    // const SALES_URL = 'https://opensheet.elk.sh/ВАШ_ID/Sales';
+  </script>
+</body>
+</html>
