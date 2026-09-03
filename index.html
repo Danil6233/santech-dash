@@ -19,21 +19,17 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
     body { background-color: var(--bg); color: var(--text); padding: 16px; }
     
-    /* Переключатель магазинов */
     .tabs { display: flex; background: var(--card-bg); border-radius: 8px; padding: 4px; margin-bottom: 16px; }
     .tab { flex: 1; border: none; background: transparent; padding: 8px; font-size: 13px; font-weight: 600; color: var(--hint); border-radius: 6px; }
     .tab.active { background: var(--accent); color: var(--accent-text); }
     
-    /* Текст времени обновления */
     .update-time { text-align: center; font-size: 12px; color: var(--hint); margin-bottom: 12px; }
     
-    /* Карточки KPI */
     .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
     .kpi-card { background: var(--card-bg); border-radius: 12px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
     .kpi-label { font-size: 13px; color: var(--hint); margin-bottom: 6px; }
     .kpi-value { font-size: 18px; font-weight: 700; }
     
-    /* Логистика и остатки */
     .section-title { font-size: 15px; font-weight: 600; margin-bottom: 10px; margin-top: 20px; }
     .list-container { background: var(--card-bg); border-radius: 12px; overflow: hidden; }
     .list-item { padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.05); }
@@ -67,7 +63,6 @@
 
   <div class="section-title">Требует внимания логистики</div>
   <div class="list-container" id="alerts-list">
-    <!-- Сюда будут подгружаться остатки -->
     <div class="list-item">
       <div class="item-name">Котел газовый BAXI ECO Four 24 F</div>
       <div class="item-action action-move">Переместить 1 шт. на Московскую (На Пресне 2 шт.)</div>
@@ -82,29 +77,35 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // Установка текущей даты и времени
-    // 1. Указываем ссылку на вашу таблицу (вставьте свой ID вместо ВАШ_ID)
-const SHEET_URL = 'https://opensheet.elk.sh/ВАШ_ID/Sheet1';
-const updateText = document.getElementById('last-update');
-updateText.innerText = "Синхронизация с базой...";
+    // 1. ВАЖНО: Вместо "ID_ВАШЕЙ_ТАБЛИЦЫ" ниже вставьте реальный ID из ссылки на Google Sheet
+    const SHEET_URL = 'https://opensheet.elk.sh/ID_ВАШЕЙ_ТАБЛИЦЫ/Sheet1';
+    
+    const updateText = document.getElementById('last-update');
+    updateText.innerText = "Синхронизация с базой...";
 
-// 2. Делаем запрос к Google Таблице
-fetch(SHEET_URL)
-  .then(response => response.json())
-  .then(data => {
-    // 3. Берем дату из первой строки данных, столбец "Обновлено"
-    const lastDate = data[0]["Обновлено"];
-    if (lastDate) {
-      updateText.innerText = `База 1С обновлена: ${lastDate}`;
-    } else {
-      updateText.innerText = "Статус: данные загружены";
-    }
-  })
-  .catch(error => {
-    updateText.innerText = "Ошибка синхронизации с базой";
-  });
+    // 2. Делаем запрос к Google Таблице
+    fetch(SHEET_URL)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Сетевая ошибка при обращении к таблице');
+        }
+        return response.json();
+      })
+      .then(data => {
+        // 3. Берем дату из первой строки (во второй ячейке под заголовком "Обновлено")
+        const lastDate = data[0]["Обновлено"];
+        if (lastDate) {
+          updateText.innerText = `База 1С обновлена: ${lastDate}`;
+        } else {
+          updateText.innerText = "Данные загружены (колонка 'Обновлено' не найдена)";
+        }
+      })
+      .catch(error => {
+        updateText.innerText = "Ошибка синхронизации с базой";
+        console.error(error);
+      });
 
-    // Данные для переключения (заглушки для демонстрации клиенту)
+    // Данные для переключения (заглушки для демонстрации)
     const storeData = {
       all: { rev: '6 006 257 ₽', ord: '1 842 шт.' },
       moscow: { rev: '5 331 040 ₽', ord: '1 620 шт.' },
@@ -112,17 +113,12 @@ fetch(SHEET_URL)
     };
 
     function setStore(storeId, btnElement) {
-      // Меняем активную кнопку
       document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
       btnElement.classList.add('active');
       
-      // Обновляем цифры
       document.getElementById('val-revenue').innerText = storeData[storeId].rev;
       document.getElementById('val-orders').innerText = storeData[storeId].ord;
     }
-
-    // Здесь можно добавить функцию fetch() для связи с вашими Google Таблицами через OpenSheet
-    // const SALES_URL = 'https://opensheet.elk.sh/ВАШ_ID/Sales';
   </script>
 </body>
 </html>
