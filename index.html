@@ -24,6 +24,9 @@
     .tab { flex: 1; border: none; background: transparent; padding: 8px; font-size: 13px; font-weight: 600; color: var(--hint); border-radius: 6px; }
     .tab.active { background: var(--accent); color: var(--accent-text); }
     
+    /* Текст времени обновления */
+    .update-time { text-align: center; font-size: 12px; color: var(--hint); margin-bottom: 12px; }
+    
     /* Карточки KPI */
     .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
     .kpi-card { background: var(--card-bg); border-radius: 12px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
@@ -48,6 +51,8 @@
     <button class="tab" onclick="setStore('moscow', this)">Московская</button>
     <button class="tab" onclick="setStore('presnya', this)">Пресня</button>
   </div>
+
+  <div class="update-time" id="last-update">Синхронизация...</div>
 
   <div class="kpi-grid">
     <div class="kpi-card">
@@ -76,6 +81,12 @@
   <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
+
+    // Установка текущей даты и времени
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+    const dateStr = now.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    document.getElementById('last-update').innerText = `Последнее обновление: ${dateStr} в ${timeStr}`;
 
     // Данные для переключения (заглушки для демонстрации клиенту)
     const storeData = {
