@@ -83,10 +83,26 @@
     tg.expand();
 
     // Установка текущей даты и времени
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-    const dateStr = now.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    document.getElementById('last-update').innerText = `Последнее обновление: ${dateStr} в ${timeStr}`;
+    // 1. Указываем ссылку на вашу таблицу (вставьте свой ID вместо ВАШ_ID)
+const SHEET_URL = 'https://opensheet.elk.sh/ВАШ_ID/Sales';
+const updateText = document.getElementById('last-update');
+updateText.innerText = "Синхронизация с базой...";
+
+// 2. Делаем запрос к Google Таблице
+fetch(SHEET_URL)
+  .then(response => response.json())
+  .then(data => {
+    // 3. Берем дату из первой строки данных, столбец "Обновлено"
+    const lastDate = data[0]["Обновлено"];
+    if (lastDate) {
+      updateText.innerText = `База 1С обновлена: ${lastDate}`;
+    } else {
+      updateText.innerText = "Статус: данные загружены";
+    }
+  })
+  .catch(error => {
+    updateText.innerText = "Ошибка синхронизации с базой";
+  });
 
     // Данные для переключения (заглушки для демонстрации клиенту)
     const storeData = {
