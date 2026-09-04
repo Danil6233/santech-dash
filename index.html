@@ -77,7 +77,9 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    const SHEET_URL = 'https://opensheet.elk.sh/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/Sheet1';
+    // Запрос к первой таблице (Cleaned_Sales) для получения времени обновления
+    const SHEET_URL = 'https://opensheet.elk.sh/1t_6Q9IQzVfcPX2w_fbvXGLysHugLgbCLj_8PMRAj-_A/Sheet1';
+    
     const updateText = document.getElementById('last-update');
     updateText.innerText = "Синхронизация с базой...";
 
@@ -101,6 +103,7 @@
         console.error(error);
       });
 
+    // Данные для переключения (заглушки для демонстрации)
     const storeData = {
       all: { rev: '6 006 257 ₽', ord: '1 842 шт.' },
       moscow: { rev: '5 331 040 ₽', ord: '1 620 шт.' },
