@@ -77,12 +77,10 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // 1. ВАЖНО: Вместо "ID_ВАШЕЙ_ТАБЛИЦЫ" ниже вставьте реальный ID из ссылки на Google Sheet
-    const SHEET_URL = const SHEET_URL = 'https://opensheet.elk.sh/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/Sheet1';
+    const SHEET_URL = 'https://opensheet.elk.sh/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/Sheet1';
     const updateText = document.getElementById('last-update');
     updateText.innerText = "Синхронизация с базой...";
 
-    // 2. Делаем запрос к Google Таблице
     fetch(SHEET_URL)
       .then(response => {
         if (!response.ok) {
@@ -91,7 +89,6 @@
         return response.json();
       })
       .then(data => {
-        // 3. Берем дату из первой строки (во второй ячейке под заголовком "Обновлено")
         const lastDate = data[0]["Обновлено"];
         if (lastDate) {
           updateText.innerText = `База 1С обновлена: ${lastDate}`;
@@ -104,7 +101,6 @@
         console.error(error);
       });
 
-    // Данные для переключения (заглушки для демонстрации)
     const storeData = {
       all: { rev: '6 006 257 ₽', ord: '1 842 шт.' },
       moscow: { rev: '5 331 040 ₽', ord: '1 620 шт.' },
